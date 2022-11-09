@@ -1,0 +1,19 @@
+FROM alpine
+
+RUN apk add make go nodejs npm yarn python3 curl
+RUN apk add bash icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib
+RUN wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh && \
+    chmod +x /tmp/dotnet-install.sh && \
+    /tmp/dotnet-install.sh && \
+    echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc && \
+    echo 'export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools:/root/.pulumi/bin' >> ~/.bashrc
+RUN curl -fsSL https://get.pulumi.com | sh
+RUN wget https://github.com/pulumi/pulumictl/releases/download/v0.0.32/pulumictl-v0.0.32-linux-amd64.tar.gz -O /tmp/pulumictl.tar.gz && \
+    tar -xf /tmp/pulumictl.tar.gz -C /root/.pulumi/bin
+RUN npm i -g typescript
+ENV DOTNET_ROOT="/root/.dotnet"
+ENV PATH="${PATH}:${DOTNET_ROOT}:${DOTNET_ROOT}/tools:/root/.pulumi/bin"
+
+WORKDIR /root/
+SHELL ["/bin/bash",  "-c"]
+CMD ["/bin/bash"]
